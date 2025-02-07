@@ -5,6 +5,18 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
+import { TamaguiProvider, createTamagui } from "@tamagui/core";
+import { createThemes, defaultConfig } from "@tamagui/config/v4";
+
+// you usually export this from a tamagui.config.ts file
+const config = createTamagui(defaultConfig);
+
+type Conf = typeof config;
+
+// make imports typed
+declare module "@tamagui/core" {
+  interface TamaguiCustomConfig extends Conf {}
+}
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -45,14 +57,16 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <ThemeProvider value={DarkTheme}>
-      <Stack screenOptions={{ animation: "fade" }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: "transparentModal", headerShown: false }}
-        />
-      </Stack>
-    </ThemeProvider>
+    <TamaguiProvider config={config} defaultTheme="dark">
+      <ThemeProvider value={DarkTheme}>
+        <Stack screenOptions={{ animation: "fade" }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: "transparentModal", headerShown: false }}
+          />
+        </Stack>
+      </ThemeProvider>
+    </TamaguiProvider>
   );
 }
