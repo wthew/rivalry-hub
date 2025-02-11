@@ -15,6 +15,9 @@ import { Pressable } from "react-native";
 import { Text } from "tamagui";
 import { StatusBar } from "expo-status-bar";
 import { ToastProvider } from "react-native-toast-notifications";
+import { MaterialIcons } from "@expo/vector-icons";
+import { supabase } from "../services/supabase";
+import SessionContextProvider from "../contexts/session";
 
 const config = createTamagui(defaultConfig);
 
@@ -60,49 +63,51 @@ function RootLayoutNav() {
     <TamaguiProvider config={config} defaultTheme="dark">
       <ThemeProvider value={DarkTheme}>
         <ToastProvider>
-          <StatusBar backgroundColor={DarkTheme.colors.card} />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen
-              name="(private)"
-              options={{
-                headerShown: true,
-                headerLeft: ({}) => <Text style={{ margin: 16 }}>Icone</Text>,
-                headerTitle: () => (
-                  <Link href="/" asChild>
-                    <Pressable>
-                      {({ pressed }) => (
-                        <Text
-                          fontSize="$9"
-                          style={{ opacity: pressed ? 0.5 : 1 }}
-                        >
-                          Rivalry {process.env.SUPABASE_URL}
-                        </Text>
-                      )}
-                    </Pressable>
-                  </Link>
-                ),
-                headerRight: ({ tintColor }) => (
-                  <Link href="/modal" asChild>
-                    <Pressable>
-                      {({ pressed }) => (
-                        <FontAwesome
-                          name="info-circle"
-                          size={25}
-                          color={tintColor}
-                          style={{
-                            marginRight: 15,
-                            opacity: pressed ? 0.5 : 1,
-                          }}
-                        />
-                      )}
-                    </Pressable>
-                  </Link>
-                ),
-              }}
-            />
-            <Stack.Screen name="(public)" />
-            <Stack.Screen name="modal" options={{ ...modalOptions }} />
-          </Stack>
+          <SessionContextProvider>
+            <StatusBar backgroundColor={DarkTheme.colors.card} />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen
+                name="(private)"
+                options={{
+                  headerShown: true,
+                  headerLeft: ({}) => <Text style={{ margin: 16 }}>Icone</Text>,
+                  headerTitle: () => (
+                    <Link href="/" asChild>
+                      <Pressable>
+                        {({ pressed }) => (
+                          <Text
+                            fontSize="$9"
+                            style={{ opacity: pressed ? 0.5 : 1 }}
+                          >
+                            Rivalry Hub
+                          </Text>
+                        )}
+                      </Pressable>
+                    </Link>
+                  ),
+                  // headerRight: ({ tintColor }) => (
+                  //   <Link href="/settings" asChild>
+                  //     <Pressable>
+                  //       {({ pressed }) => (
+                  //         <MaterialIcons
+                  //           name="settings"
+                  //           size={25}
+                  //           color={tintColor}
+                  //           style={{
+                  //             marginRight: 15,
+                  //             opacity: pressed ? 0.5 : 1,
+                  //           }}
+                  //         />
+                  //       )}
+                  //     </Pressable>
+                  //   </Link>
+                  // ),
+                }}
+              />
+              <Stack.Screen name="(public)" />
+              <Stack.Screen name="settings" options={{ ...modalOptions }} />
+            </Stack>
+          </SessionContextProvider>
         </ToastProvider>
       </ThemeProvider>
     </TamaguiProvider>

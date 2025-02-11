@@ -1,12 +1,12 @@
 import React from "react";
 
-import { Stack } from "expo-router";
-
+import { Redirect, Stack } from "expo-router";
+import { useSession } from "@/src/contexts/session";
 
 export default function TabLayout() {
-  return (
-    <Stack screenOptions={{ headerShown: false }}>
-        
-    </Stack>
-  );
+  const { session } = useSession();
+
+  if (session?.user.id) return <Redirect href={"/"} />;
+
+  return <Stack screenOptions={{ headerShown: false }}></Stack>;
 }

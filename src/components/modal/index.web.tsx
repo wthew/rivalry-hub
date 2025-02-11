@@ -1,14 +1,18 @@
-import { Link } from "expo-router";
-import { ComponentProps, PropsWithChildren } from "react";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Link, router } from "expo-router";
+import React, { ComponentProps, PropsWithChildren } from "react";
 import { ViewStyle } from "react-native";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
-import { useTheme } from "tamagui";
+import { Text, useTheme } from "tamagui";
 
-export const modalOptions = { presentation: "transparentModal", headerShown: false } as const
+export const modalOptions = {
+  presentation: "transparentModal",
+  headerShown: false,
+} as const;
 type Props = PropsWithChildren<ComponentProps<typeof View>>;
 export default function Modal({ children, ...props }: Props) {
-    const { background, borderColor } = useTheme();
+  const { background, borderColor, color } = useTheme();
 
   return (
     <Animated.View
@@ -21,7 +25,7 @@ export default function Modal({ children, ...props }: Props) {
       }}
     >
       {/* Dismiss modal when pressing outside */}
-      <Link href={"../"} asChild>
+      <Link href={"/"} asChild>
         <Pressable style={StyleSheet.absoluteFill} />
       </Link>
       <Animated.View
@@ -39,6 +43,11 @@ export default function Modal({ children, ...props }: Props) {
           ...(props.style as ViewStyle),
         }}
       >
+        <Pressable style={{ position: "absolute", top: 16, right: 16 }}>
+          <Text onPress={() => router.back()}>
+            <MaterialIcons name="close" color={color.get()} size={16} />
+          </Text>
+        </Pressable>
         {children}
       </Animated.View>
     </Animated.View>

@@ -20,8 +20,6 @@ export default function SignInPage() {
 
     if (error) toast.show(error.message);
     setLoading(false);
-
-    router.push("/");
   }
 
   return (

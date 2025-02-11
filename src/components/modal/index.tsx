@@ -1,8 +1,8 @@
 import { ComponentProps, PropsWithChildren, useEffect } from "react";
-import { View, ViewStyle } from "react-native";
-import { useTheme } from "tamagui";
+import { ViewStyle } from "react-native";
+import { View, Text, useTheme } from "tamagui";
 import * as NavigationBar from "expo-navigation-bar";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { DarkTheme } from "@react-navigation/native";
 
 export const modalOptions = {
