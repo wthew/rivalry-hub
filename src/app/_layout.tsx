@@ -55,6 +55,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  console.log(process.env)
   return (
     <TamaguiProvider config={config} defaultTheme="dark">
       <ThemeProvider value={DarkTheme}>
@@ -75,7 +76,7 @@ function RootLayoutNav() {
                         fontSize="$9"
                         style={{ opacity: pressed ? 0.5 : 1 }}
                       >
-                        Rivalry
+                        Rivalry {process.env.SUPABASE_URL}
                       </Text>
                     )}
                   </Pressable>

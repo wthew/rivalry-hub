@@ -1,8 +1,10 @@
 import * as jest from "@jest/globals";
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
-const url = process.env.SUPABASE_URL;
-const key = process.env.SUPABASE_ANON_KEY;
+const getEnv = (key: string) => process.env[key];
+
+const url = getEnv("EXPO_PUBLIC_SUPABASE_URL");
+const key = getEnv("EXPO_PUBLIC_SUPABASE_ANON_KEY");
 
 const client = createClient(url!, key!);
 
@@ -10,7 +12,7 @@ jest.describe("Round Robin Generation", () => {
   jest.beforeAll(() => {
     jest.expect(url).toBeDefined();
     jest.expect(key).toBeDefined();
-    
+
     jest.expect(client).toBeDefined();
   });
 
@@ -38,13 +40,19 @@ jest.describe("Round Robin Generation", () => {
     async () => {
       const users = Array.from({ length: 8 }).map((_, idx) => `${idx}`);
 
-      const res = await client.functions.invoke("round-robin", {
+      const { data } = await client.functions.invoke("round-robin", {
         body: { users },
       });
 
-      console.log(res.data)
+      for (const group of data as [string, string][][]) {
+        const counts = group.flat().reduce(function (acc, curr) {
+          return acc[curr] ? ++acc[curr] : (acc[curr] = 1), acc;
+        }, {} as Record<string, number>);
 
-      jest.expect(400).toEqual(400);
+        for (const user of users) {
+          jest.expect(counts[user]).toEqual(1);
+        }
+      }
     }
   );
 });
