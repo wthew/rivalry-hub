@@ -8786,10 +8786,10 @@ sudo-prompt@^8.2.0:
   resolved "https://registry.yarnpkg.com/sudo-prompt/-/sudo-prompt-8.2.5.tgz#cc5ef3769a134bb94b24a631cc09628d4d53603e"
   integrity sha512-rlBo3HU/1zAJUrkY6jNxDOC9eVYliG6nS4JA8u8KAshITd07tafMc/Br7xQwCSseXwJ2iCcHCE8SNWX3q8Z+kw==
 
-supabase@^2.9.6:
-  version "2.9.6"
-  resolved "https://registry.yarnpkg.com/supabase/-/supabase-2.9.6.tgz#1291669fe1704b375fca70596a2f261631f8e859"
-  integrity sha512-oPJXgvyuZCsbR/SQ5/0Jvab3zHqUg+lunnweYMCN8EdT9Q0ANChrn1lCKUJ4toXJXdq8gdVgNvTgIDu/JljbMw==
+supabase@^2.12.1:
+  version "2.12.1"
+  resolved "https://registry.yarnpkg.com/supabase/-/supabase-2.12.1.tgz#a61e0618fc5a340e03759c843e645e1e6eb5412e"
+  integrity sha512-vB6LX1KGrqku8AFlp2vJw49IUB9g6Rz2b84qpcWSZ3mMDFumA6hDSbXbFJUnr3hcvyPzoOsQlhMTZN7a6o3hfA==
   dependencies:
     bin-links "^5.0.0"
     https-proxy-agent "^7.0.2"
