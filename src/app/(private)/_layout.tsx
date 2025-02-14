@@ -19,7 +19,7 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  const { xl } = useMedia();
+  const { lg } = useMedia();
   const height = useHeaderHeight();
   const { session } = useSession();
   const toast = useToast();
@@ -27,14 +27,14 @@ export default function TabLayout() {
   const options: React.ComponentProps<typeof Tabs>["screenOptions"] = useMemo(
     () =>
       ({
-        tabBarPosition: xl ? "left" : "bottom",
-        animation: xl ? "fade" : "shift",
+        tabBarPosition: lg ? "left" : "bottom",
+        animation: lg ? "fade" : "shift",
         headerTransparent: true,
         tabBarStyle: { paddingBottom: 16 },
         title: "teste",
         sceneStyle: { paddingTop: height },
       } as const),
-    [xl]
+    [lg]
   );
 
   if (!session?.user.id) return <Redirect href={"/sign-in"} />;
