@@ -1,52 +1,20 @@
 import BattleCard from "@/src/components/battles/battle-card";
-import { supabase } from "@/src/services/supabase";
-import { Tables } from "@/src/types/supabase.types";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import useRealTimeData from "@/src/hooks/useRealTimeData";
 import { FlatList, StyleSheet, View } from "react-native";
 import { Text } from "tamagui";
 
-type Battles = Pick<Tables<"battles">, "id" | "winner" | "user_a" | "user_b">[];
 export default function TabOneScreen() {
-  const [battles, setBattles] = useState<Battles>([]);
+  const { data: battles = [] } = useRealTimeData("battles", {
+    key: "list_battles",
+    select: "id, user_a, user_b, winner",
+    cb: (payload, old = []) => {
+      const item = payload.new as (typeof old)[number];
 
-  const t = (payload: any) => {
-    const battle = payload.new as Battles[number];
-
-    setBattles((old) => {
-      const next = [...old].map((old) => (old.id === battle.id ? old : old));
-      const exists = next.find(({ id }) => id === battle.id);
-
-      if (exists) return next;
-
-      return next;
-    });
-  };
-
-  useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase
-        .from("battles")
-        .select("id,winner,user_a,user_b");
-      return data || [];
-    };
-
-    fetch().then((battles) => setBattles(battles));
-
-    const channel = supabase.channel("battles");
-
-    channel.on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "battles" },
-      (a) => {}
-    );
-
-    channel.subscribe();
-
-    return () => {
-      channel.unsubscribe();
-    };
-  }, []);
+      return old.find(({ id }) => id === item.id)
+        ? old.map((old) => (old.id === item.id ? item : old))
+        : [item, ...old];
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -57,9 +25,7 @@ export default function TabOneScreen() {
       <FlatList
         data={battles}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          return <BattleCard key={item.id} battle={item} />;
-        }}
+        renderItem={({ item }) => <BattleCard key={item.id} battle={item} />}
       />
     </View>
   );

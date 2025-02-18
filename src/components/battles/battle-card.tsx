@@ -1,30 +1,43 @@
 import useData from "@/src/hooks/useData";
 import { Tables } from "@/src/types/supabase";
-import { Text, View } from "tamagui";
+import { Text, View } from "@tamagui/core";
+import React from "react";
 
 type Props = {
-  battle: Tables<"battles">;
+  battle: Pick<Tables<"battles">, "user_a" | "user_b" | "winner">;
 };
-export default function BattleCard({ battle }: Props) {
-  const { id, created_at, created_by, winner } = battle;
 
-  const { data: user_a, isLoading: loadingUserA } = useData("profiles", {
-    key: "user_a",
+export default function BattleCard({ battle }: Props) {
+  const { winner } = battle;
+
+  const user_a = useData("profiles", {
+    key: ["user_nick", battle.user_a],
     select: "nick",
     filter: ["id", "eq", battle.user_a],
-    limit: 1
+    limit: 1,
   });
 
-  const { data: user_b, isLoading: loadingUserB } = useData("profiles", {
-    key: "user_b",
+  const user_b = useData("profiles", {
+    key: ["user_nick", battle.user_b],
     select: "nick",
     filter: ["id", "eq", battle.user_b],
-    limit: 1
+    limit: 1,
   });
 
+  if (user_a.isLoading || user_b.isLoading) return <Text>Carregando</Text>;
+
   return (
-    <View>
-      <Text>Battlecard, {user_a?.nick} - {user_b?.nick}</Text>
+    <View
+      // padding="$2"
+      style={{
+        // padding: space[2].val,
+        // borderRadius: space[2].val,
+        borderColor: 'white'
+      }}
+    >
+      <Text>
+        Battlecard, {user_a.data?.nick} - {user_b.data?.nick}
+      </Text>
     </View>
   );
 }
