@@ -12,12 +12,13 @@ import { modalOptions } from "../components/modal/index";
 import * as NavigationBar from "expo-navigation-bar";
 import * as SystemUI from "expo-system-ui";
 import { Pressable } from "react-native";
-import { Text } from "tamagui";
+import { Text, View, XStack } from "tamagui";
 import { StatusBar } from "expo-status-bar";
 import { ToastProvider } from "react-native-toast-notifications";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { supabase } from "../services/supabase";
 import SessionContextProvider from "../contexts/session";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const config = createTamagui(defaultConfig);
 
@@ -57,59 +58,63 @@ export default function RootLayout() {
 
   return <RootLayoutNav />;
 }
+const queryClient = new QueryClient();
 
 function RootLayoutNav() {
   return (
-    <TamaguiProvider config={config} defaultTheme="dark">
-      <ThemeProvider value={DarkTheme}>
-        <ToastProvider>
-          <SessionContextProvider>
-            <StatusBar backgroundColor={DarkTheme.colors.card} />
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen
-                name="(private)"
-                options={{
-                  headerShown: true,
-                  headerLeft: ({}) => <Text style={{ margin: 16 }}>Icone</Text>,
-                  headerTitle: () => (
-                    <Link href="/" asChild>
-                      <Pressable>
-                        {({ pressed }) => (
-                          <Text
-                            fontSize="$9"
-                            style={{ opacity: pressed ? 0.5 : 1 }}
-                          >
-                            Rivalry Hub
-                          </Text>
-                        )}
-                      </Pressable>
-                    </Link>
-                  ),
-                  // headerRight: ({ tintColor }) => (
-                  //   <Link href="/settings" asChild>
-                  //     <Pressable>
-                  //       {({ pressed }) => (
-                  //         <MaterialIcons
-                  //           name="settings"
-                  //           size={25}
-                  //           color={tintColor}
-                  //           style={{
-                  //             marginRight: 15,
-                  //             opacity: pressed ? 0.5 : 1,
-                  //           }}
-                  //         />
-                  //       )}
-                  //     </Pressable>
-                  //   </Link>
-                  // ),
-                }}
-              />
-              <Stack.Screen name="(public)" />
-              <Stack.Screen name="settings" options={{ ...modalOptions }} />
-            </Stack>
-          </SessionContextProvider>
-        </ToastProvider>
-      </ThemeProvider>
-    </TamaguiProvider>
+    <QueryClientProvider client={queryClient}>
+      <TamaguiProvider config={config} defaultTheme="dark">
+        <ThemeProvider value={DarkTheme}>
+          <ToastProvider>
+            <SessionContextProvider>
+              <StatusBar backgroundColor={DarkTheme.colors.card} />
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen
+                  name="(private)"
+                  options={{
+                    headerShown: true,
+                    headerTitle: () => (
+                      <Link href="/" asChild>
+                        <Pressable>
+                          {({ pressed }) => (
+                            <XStack opacity={pressed ? 0.5 : 1} gap={8}>
+                              <MaterialCommunityIcons
+                                name="sword-cross"
+                                size={24}
+                                color={DarkTheme.colors.text}
+                              />
+                              <Text fontSize="$8">Rivalry Hub</Text>
+                            </XStack>
+                          )}
+                        </Pressable>
+                      </Link>
+                    ),
+                    // headerRight: ({ tintColor }) => (
+                    //   <Link href="/settings" asChild>
+                    //     <Pressable>
+                    //       {({ pressed }) => (
+                    //         <MaterialIcons
+                    //           name="settings"
+                    //           size={25}
+                    //           color={tintColor}
+                    //           style={{
+                    //             marginRight: 15,
+                    //             opacity: pressed ? 0.5 : 1,
+                    //           }}
+                    //         />
+                    //       )}
+                    //     </Pressable>
+                    //   </Link>
+                    // ),
+                  }}
+                />
+                <Stack.Screen name="(public)" />
+                <Stack.Screen name="settings" options={{ ...modalOptions }} />
+              </Stack>
+            </SessionContextProvider>
+          </ToastProvider>
+        </ThemeProvider>
+      </TamaguiProvider>
+    </QueryClientProvider>
   );
 }

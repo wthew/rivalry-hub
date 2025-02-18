@@ -1,8 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import React, { useMemo } from "react";
+import {
+  FontAwesome,
+  FontAwesome6,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { useMedia } from "tamagui";
-import { Session } from "@supabase/supabase-js";
 import { supabase } from "@/src/services/supabase";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSession } from "@/src/contexts/session";
@@ -10,7 +13,6 @@ import { Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useToast } from "react-native-toast-notifications";
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
   color: string;
@@ -19,51 +21,71 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  const { xl } = useMedia();
+  const { lg } = useMedia();
   const height = useHeaderHeight();
-  const { session } = useSession();
+  const { session, nick } = useSession();
   const toast = useToast();
 
   const options: React.ComponentProps<typeof Tabs>["screenOptions"] = useMemo(
     () =>
       ({
-        tabBarPosition: xl ? "left" : "bottom",
-        animation: xl ? "fade" : "shift",
+        tabBarPosition: lg ? "left" : "bottom",
+        animation: lg ? "fade" : "shift",
+        tabBarVariant: lg ? "material" : "uikit",
+        tabBarLabelPosition: "below-icon",
+        tabBarLabelStyle: { marginTop: lg ? 4 : 0 },
         headerTransparent: true,
         tabBarStyle: { paddingBottom: 16 },
-        title: "teste",
         sceneStyle: { paddingTop: height },
       } as const),
-    [xl]
+    [lg]
   );
 
   if (!session?.user.id) return <Redirect href={"/sign-in"} />;
 
-  return (
-    <Tabs screenOptions={options}>
+  const tabs = {
+    clan: (
       <Tabs.Screen
+        key="clan"
+        name="clan"
+        options={{
+          title: "My Clan",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome6 name="house-flag" size={18} color={color} />
+          ),
+        }}
+      />
+    ),
+    index: (
+      <Tabs.Screen
+        key="index"
         name="index"
         options={{
-          title: "Tab One",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerTitle: `Wellcome ${nick}!`,
+          title: `Home`,
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="castle" size={24} color={color} />
+          ),
         }}
       />
+    ),
+    user: (
       <Tabs.Screen
-        name="two"
-        options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="user/index"
+        key="user"
+        name="user"
         options={{
           title: "User",
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="shield-sword"
+              size={24}
+              color={color}
+            />
+          ),
           headerTitle: () => <>User: {session.user.email}</>,
           headerRight: ({ tintColor }) => (
             <Pressable
-            style={{ marginRight: 8 }}
+              style={{ marginRight: 8 }}
               onPress={async () => {
                 const { error } = await supabase.auth.signOut();
                 if (error) toast.show(error.message);
@@ -74,6 +96,14 @@ export default function TabLayout() {
           ),
         }}
       />
+    ),
+  };
+
+  return (
+    <Tabs initialRouteName="index" screenOptions={options}>
+      {lg
+        ? [tabs.index, tabs.clan, tabs.user]
+        : [tabs.clan, tabs.index, tabs.user]}
     </Tabs>
   );
 }
