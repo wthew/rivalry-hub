@@ -5,24 +5,18 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
-import { useMedia } from "tamagui";
+import { useMedia, useTheme, useConfiguration } from "tamagui";
 import { supabase } from "@/src/services/supabase";
-import { useHeaderHeight } from "@react-navigation/elements";
 import { useSession } from "@/src/contexts/session";
 import { Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useToast } from "react-native-toast-notifications";
 
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
-
 export default function TabLayout() {
   const { lg } = useMedia();
-  const height = useHeaderHeight();
+  const { background } = useTheme();
+  const { tokens } = useConfiguration();
+
   const { session, nick } = useSession();
   const toast = useToast();
 
@@ -34,9 +28,17 @@ export default function TabLayout() {
         tabBarVariant: lg ? "material" : "uikit",
         tabBarLabelPosition: "below-icon",
         tabBarLabelStyle: { marginTop: lg ? 4 : 0 },
-        headerTransparent: true,
-        tabBarStyle: { paddingBottom: 16 },
-        sceneStyle: { paddingTop: height },
+        headerShown: false,
+        tabBarStyle: {
+          paddingBottom: 16,
+          borderTopWidth: 0,
+          borderRightWidth: 0,
+        },
+        sceneStyle: {
+          paddingLeft: 32,
+          backgroundColor: background.val,
+          borderTopLeftRadius: lg ? (tokens.radius as any)["6"].val : undefined,
+        },
       } as const),
     [lg]
   );
@@ -82,18 +84,22 @@ export default function TabLayout() {
               color={color}
             />
           ),
-          headerTitle: () => <>User: {session.user.email}</>,
-          headerRight: ({ tintColor }) => (
-            <Pressable
-              style={{ marginRight: 8 }}
-              onPress={async () => {
-                const { error } = await supabase.auth.signOut();
-                if (error) toast.show(error.message);
-              }}
-            >
-              <MaterialIcons name="logout" color={tintColor} size={32} />
-            </Pressable>
-          ),
+          // headerLeftContainerStyle: { paddingLeft: 16, paddingRight: 4 },
+          // headerLeft: ({ tintColor }) => (
+          //   <FontAwesome name="user-circle" color={tintColor} size={32} />
+          // ),
+          // headerTitle: `${nick}`,
+          // headerRight: ({ tintColor }) => (
+          //   <Pressable
+          //     style={{ marginRight: 8 }}
+          //     onPress={async () => {
+          //       const { error } = await supabase.auth.signOut();
+          //       if (error) toast.show(error.message);
+          //     }}
+          //   >
+          //     <MaterialIcons name="logout" color={tintColor} size={32} />
+          //   </Pressable>
+          // ),
         }}
       />
     ),

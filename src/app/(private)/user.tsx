@@ -12,8 +12,8 @@ export default function ModalPage() {
   }
 
   return (
-    <YStack style={{ padding: 16 }}>
-      <UserPage />
+    <YStack style={{ padding: 32, paddingLeft: 0 }}>
+      <UserPage id={session.user.id} />
     </YStack>
   );
 }
