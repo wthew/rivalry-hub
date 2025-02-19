@@ -27,6 +27,7 @@ export default function SignInPage() {
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "discord",
+      options: { redirectTo: 'https://wthew.github.io/rivalry-hub/' }
     });
     console.log({ data, error });
 
