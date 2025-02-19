@@ -11,7 +11,7 @@ import { modalOptions } from "../components/modal/index";
 
 import * as NavigationBar from "expo-navigation-bar";
 import * as SystemUI from "expo-system-ui";
-import { Pressable } from "react-native";
+import { Platform, Pressable } from "react-native";
 import { Text, View, XStack } from "tamagui";
 import { StatusBar } from "expo-status-bar";
 import { ToastProvider } from "react-native-toast-notifications";
@@ -22,8 +22,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const config = createTamagui(defaultConfig);
 
-SystemUI.setBackgroundColorAsync(DarkTheme.colors.background);
-NavigationBar.setBackgroundColorAsync(DarkTheme.colors.card);
+if (Platform.OS === 'android') { 
+  SystemUI.setBackgroundColorAsync(DarkTheme.colors.background);
+  NavigationBar.setBackgroundColorAsync(DarkTheme.colors.card);
+}
 
 type Conf = typeof config;
 
