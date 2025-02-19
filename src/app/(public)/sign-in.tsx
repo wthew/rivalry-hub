@@ -22,6 +22,17 @@ export default function SignInPage() {
     setLoading(false);
   }
 
+  async function signInWithDiscord() {
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "discord",
+    });
+    console.log({ data, error });
+
+    setLoading(false);
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.container}>
@@ -50,6 +61,11 @@ export default function SignInPage() {
         <View style={[styles.verticallySpaced]}>
           <Button disabled={loading} onPress={() => signInWithEmail()}>
             <Text>Logar</Text>
+          </Button>
+        </View>
+        <View style={[styles.verticallySpaced]}>
+          <Button disabled={loading} onPress={() => signInWithDiscord()}>
+            <Text>Logar com discord</Text>
           </Button>
         </View>
       </View>
