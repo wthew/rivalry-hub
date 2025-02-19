@@ -72,7 +72,9 @@ function RootLayoutNav() {
                 <Stack.Screen
                   name="(private)"
                   options={{
+                    contentStyle: { backgroundColor: DarkTheme.colors.card },
                     headerShown: true,
+                    headerStyle: { borderWidth: 0 } as any,
                     headerTitle: () => (
                       <Link href="/" asChild>
                         <Pressable>
@@ -89,23 +91,6 @@ function RootLayoutNav() {
                         </Pressable>
                       </Link>
                     ),
-                    // headerRight: ({ tintColor }) => (
-                    //   <Link href="/settings" asChild>
-                    //     <Pressable>
-                    //       {({ pressed }) => (
-                    //         <MaterialIcons
-                    //           name="settings"
-                    //           size={25}
-                    //           color={tintColor}
-                    //           style={{
-                    //             marginRight: 15,
-                    //             opacity: pressed ? 0.5 : 1,
-                    //           }}
-                    //         />
-                    //       )}
-                    //     </Pressable>
-                    //   </Link>
-                    // ),
                   }}
                 />
                 <Stack.Screen name="(public)" />

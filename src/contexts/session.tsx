@@ -1,12 +1,17 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren as Props, useCallback, useMemo } from "react";
 import { supabase } from "../services/supabase";
 import { Session } from "@supabase/supabase-js";
 import useData from "../hooks/useData";
+import { useToast } from "react-native-toast-notifications";
 
-type SessionContext = { session?: Session; nick?: string };
+type SessionContext = {
+  session?: Session;
+  nick?: string;
+  signOut: () => Promise<void>;
+};
 const SessionContext = React.createContext({} as SessionContext);
 
-export default function SessionContextProvider(props: PropsWithChildren) {
+export default function SessionContextProvider({ children }: Props) {
   const [session, setSession] = React.useState<Session | undefined>(undefined);
 
   const { data } = useData("profiles", {
@@ -30,11 +35,28 @@ export default function SessionContextProvider(props: PropsWithChildren) {
     };
   }, []);
 
+  const ctrl = useSessionControls();
+
+  const value = useMemo(() => {
+    return data && session
+      ? { session, ...data, ...ctrl }
+      : { session: undefined, ...ctrl };
+  }, [session, data, ctrl]);
+
   return (
-    <SessionContext.Provider value={data ? { session, ...data } : {}}>
-      {props.children}
-    </SessionContext.Provider>
+    <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
   );
 }
 
 export const useSession = () => React.useContext(SessionContext);
+
+function useSessionControls() {
+  const toast = useToast();
+
+  const signOut = useCallback(async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) toast.show(error.message);
+  }, []);
+
+  return { signOut } as const;
+}

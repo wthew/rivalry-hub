@@ -1,7 +1,7 @@
 import BattleCard from "@/src/components/battles/battle-card";
 import useRealTimeData from "@/src/hooks/useRealTimeData";
-import { FlatList, StyleSheet, View } from "react-native";
-import { Text } from "tamagui";
+import { FlatList, View } from "react-native";
+import { H6, XStack, ScrollView } from "tamagui";
 
 export default function TabOneScreen() {
   const { data: battles = [] } = useRealTimeData("battles", {
@@ -17,33 +17,17 @@ export default function TabOneScreen() {
   });
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        Minhas Batalhas: ({process.env.EXPO_PUBLIC_SUPABASE_URL})
-      </Text>
-      <View style={styles.separator} />
-      <FlatList
-        data={battles}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <BattleCard key={item.id} battle={item} />}
-      />
-    </View>
+    <ScrollView style={{ paddingTop: 32 }}>
+      <H6>Ultimas Batalhas:</H6>
+      <XStack marginBlock="$2">
+        <FlatList
+          horizontal
+          data={battles}
+          keyExtractor={(item) => item.id}
+          ItemSeparatorComponent={() => <View style={{ margin: 8 }} />}
+          renderItem={({ item }) => <BattleCard key={item.id} battle={item} />}
+        />
+      </XStack>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-});
