@@ -12,6 +12,7 @@ export type Opts<
   select: Q;
   filter?: [string & keyof Schema["Tables"][T]["Row"], string, unknown];
   limit?: L;
+  skip?: boolean;
 };
 
 export default function useData<
@@ -19,11 +20,13 @@ export default function useData<
   Q extends string = "*",
   L extends number | undefined = undefined
 >(table: T, opts: Opts<T, Q, L>) {
-  const { key, select, filter, limit } = opts;
+  const { key, select, filter, limit, skip } = opts;
 
   return useQuery({
-    queryKey: [table, Array.isArray(key) ? [...key] : key],
+    queryKey: Array.isArray(key) ? [table, ...key] : [table, key],
     queryFn: async () => {
+      if (skip) return undefined;
+
       const builder: Builder<Schema, Relation<T>, T> = supabase.from(table);
       const t = builder.select(select);
 
@@ -32,6 +35,8 @@ export default function useData<
       if (limit === 1) t.single();
 
       return t.then(({ data, error }) => {
+        if (error) console.error(error);
+        else console.info(data);
         type Res = L extends 1
           ? FlatArray<Array<typeof data>, 2>
           : NonNullable<typeof data>;

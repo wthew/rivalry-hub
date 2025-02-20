@@ -1,28 +1,34 @@
 import BattleCard from "@/src/components/battles/battle-card";
+import useData from "@/src/hooks/useData";
 import useRealTimeData from "@/src/hooks/useRealTimeData";
 import { FlatList, View } from "react-native";
 import { H6, XStack, ScrollView } from "tamagui";
 
 export default function TabOneScreen() {
-  const { data: battles = [] } = useRealTimeData("battles", {
-    key: "list_battles",
-    select: "id, user_a, user_b, winner",
-    cb: (payload, old = []) => {
-      const item = payload.new as (typeof old)[number];
+  // const { data: battles = [] } = useRealTimeData("battles", {
+  //   key: "list_battles",
+  //   select: "id, user_a, user_b, winner",
+  //   cb: (payload, old = []) => {
+  //     const item = payload.new as (typeof old)[number];
 
-      return old.find(({ id }) => id === item.id)
-        ? old.map((old) => (old.id === item.id ? item : old))
-        : [item, ...old];
-    },
+  //     return old.find(({ id }) => id === item.id)
+  //       ? old.map((old) => (old.id === item.id ? item : old))
+  //       : [item, ...old];
+  //   },
+  // });
+
+  const { data = [] } = useData("battles", {
+    key: "list_battles",
+    select: "id, profile_a, profile_b",
   });
 
   return (
     <ScrollView style={{ paddingTop: 32 }}>
-      <H6>Ultimas Batalhas:</H6>
+      <H6>Test:</H6>
       <XStack marginBlock="$2">
         <FlatList
           horizontal
-          data={battles}
+          data={data}
           keyExtractor={(item) => item.id}
           ItemSeparatorComponent={() => <View style={{ margin: 8 }} />}
           renderItem={({ item }) => <BattleCard key={item.id} battle={item} />}

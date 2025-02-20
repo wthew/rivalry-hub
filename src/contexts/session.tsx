@@ -19,6 +19,7 @@ export default function SessionContextProvider({ children }: Props) {
     select: "nick",
     filter: ["id", "eq", session?.user.id],
     limit: 1,
+    skip: !session?.user.id
   });
 
   React.useEffect(() => {

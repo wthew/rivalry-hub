@@ -14,25 +14,22 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
-          user_a: string
-          user_b: string
-          winner: string | null
+          profile_a: string
+          profile_b: string
         }
         Insert: {
           created_at?: string
           created_by?: string
           id?: string
-          user_a?: string
-          user_b?: string
-          winner?: string | null
+          profile_a: string
+          profile_b: string
         }
         Update: {
           created_at?: string
           created_by?: string
           id?: string
-          user_a?: string
-          user_b?: string
-          winner?: string | null
+          profile_a?: string
+          profile_b?: string
         }
         Relationships: [
           {
@@ -43,24 +40,56 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "battles_user_a_fkey"
-            columns: ["user_a"]
+            foreignKeyName: "battles_profile_a_fkey"
+            columns: ["profile_a"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "battles_user_b_fkey"
-            columns: ["user_b"]
+            foreignKeyName: "battles_profile_b_fkey"
+            columns: ["profile_b"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      battles_profiles_wins: {
+        Row: {
+          battle_id: string
+          created_at: string
+          id: string
+          profile_id: string
+          wins: number
+        }
+        Insert: {
+          battle_id: string
+          created_at?: string
+          id?: string
+          profile_id: string
+          wins?: number
+        }
+        Update: {
+          battle_id?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
+          wins?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "battle_rounds_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "battles_winner_fkey"
-            columns: ["winner"]
+            foreignKeyName: "battles_profiles_wins_battle_id_fkey"
+            columns: ["battle_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "battles"
             referencedColumns: ["id"]
           },
         ]
@@ -85,32 +114,24 @@ export type Database = {
       }
       profiles: {
         Row: {
-          clan: string
           created_at: string
           id: string
+          idx: number
           nick: string
         }
         Insert: {
-          clan: string
           created_at?: string
           id: string
-          nick: string
-        }
-        Update: {
-          clan?: string
-          created_at?: string
-          id?: string
+          idx?: number
           nick?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_clan_fkey"
-            columns: ["clan"]
-            isOneToOne: false
-            referencedRelation: "clans"
-            referencedColumns: ["id"]
-          },
-        ]
+        Update: {
+          created_at?: string
+          id?: string
+          idx?: number
+          nick?: string
+        }
+        Relationships: []
       }
     }
     Views: {

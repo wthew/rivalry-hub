@@ -1,23 +1,26 @@
+"use client";
+
 import { AppState, Platform } from "react-native";
 import { createClient, SupportedStorage } from "@supabase/supabase-js";
 import { Database } from "../types/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-class SupabaseStorage implements SupportedStorage {
-  engine: SupportedStorage;
+class SupabaseStorage {
+  private getEngine() {
+    if (Platform.OS !== "web") return AsyncStorage;
 
-  constructor() {
-    this.engine = Platform.OS === "web" ? localStorage : AsyncStorage;
+    if (typeof localStorage === "undefined") return null;
+    return localStorage;
   }
 
   async getItem(key: string) {
-    return this.engine.getItem(key);
+    return this.getEngine()?.getItem(key);
   }
   async removeItem(key: string) {
-    return this.engine.removeItem(key);
+    return this.getEngine()?.removeItem(key);
   }
   async setItem(key: string, value: string) {
-    return this.engine.setItem(key, value);
+    return this.getEngine()?.setItem(key, value);
   }
 }
 
@@ -26,7 +29,7 @@ const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: new SupabaseStorage(),
+    storage: new SupabaseStorage() as SupportedStorage,
     autoRefreshToken: true,
     persistSession: true,
   },

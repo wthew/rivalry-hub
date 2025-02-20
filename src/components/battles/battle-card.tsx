@@ -1,49 +1,76 @@
-import useData from "@/src/hooks/useData";
+import useRealTimeData from "@/src/hooks/useRealTimeData";
+import { supabase } from "@/src/services/supabase";
 import { Tables } from "@/src/types/supabase";
-import { Text } from "@tamagui/core";
-import React from "react";
-import { Card, H5, Paragraph } from "tamagui";
+import React, { useCallback } from "react";
+import { Button, Card, Text, View, XStack, YStack } from "tamagui";
 
-type Props = {
-  battle: Pick<Tables<"battles">, "id" | "user_a" | "user_b" | "winner">;
+type BattleCardProps = {
+  battle: Pick<Tables<"battles">, "id" | "profile_a" | "profile_b">;
 };
 
-export default function BattleCard({ battle }: Props) {
-  const { data: user_a } = useData("profiles", {
-    key: ["user_nick", battle.user_a],
-    select: "nick",
-    filter: ["id", "eq", battle.user_a],
-    limit: 1,
+export default function BattleCard({ battle }: BattleCardProps) {
+  const { data = [], isLoading } = useRealTimeData("battles_profiles_wins", {
+    key: battle.id,
+    select: "id, profile_id(id, nick), wins",
+    filter: ["battle_id", "eq", battle.id],
+    cb: (payload, old = []) => {
+      const { id, wins } = payload.new as (typeof old)[number];
+      return old.map((old) => (old.id === id ? { ...old, wins } : old));
+    },
   });
 
-  const { data: user_b } = useData("profiles", {
-    key: ["user_nick", battle.user_b],
-    select: "nick",
-    filter: ["id", "eq", battle.user_b],
-    limit: 1,
-  });
-
-  if (!user_a || !user_b) return <Text>Carregando</Text>;
-
-  const winner = battle.winner
-    ? battle.winner === battle.user_a
-      ? user_a.nick
-      : battle.winner === battle.user_b
-      ? user_b.nick
-      : null
-    : null;
+  if (isLoading) return <Text>Carregando</Text>;
+  if (data.length !== 2) return <Text>Erro</Text>;
+  const [profile_a, profile_b] = data;
 
   return (
-    <Card elevate bordered>
-      <Card.Header>
-        <Paragraph opacity={0.25}>{battle.id}</Paragraph>
-        <H5>
-          {user_a.nick} x {user_b.nick}
-        </H5>
-        <Paragraph marginBlockStart="$3">
-          {winner ? `Winner: ${winner}` : "Ainda sem resultado"}
-        </Paragraph>
-      </Card.Header>
+    <Card padded bordered>
+      <XStack columnGap="$6" items="center">
+        <BattleProfileControl data={profile_a} />
+        <YStack items="center">
+          <Text>à</Text>
+          <Text fontSize="$8" fontWeight="bold">
+            x
+          </Text>
+          <Text>encerrar</Text>
+        </YStack>
+        <BattleProfileControl data={profile_b} />
+      </XStack>
     </Card>
+  );
+}
+
+type BattleProfileControlProps = {
+  data: Pick<Tables<"battles_profiles_wins">, "id" | "wins"> & {
+    profile_id: Pick<Tables<"profiles">, "nick">;
+  };
+};
+function BattleProfileControl(props: BattleProfileControlProps) {
+  const { profile_id, wins } = props.data;
+
+  const handleClick = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("battles_profiles_wins")
+      .update({ wins: props.data.wins + 1 })
+      .eq("id", props.data.id)
+      .select();
+
+    console.log({ data, error });
+  }, [props.data.id, props.data.wins]);
+
+  return (
+    <YStack position="static" items="center">
+      <Text>{wins} pontos</Text>
+
+      <Text fontSize="$8" fontWeight="bold">
+        {profile_id.nick}
+      </Text>
+
+      <View style={{ width: "100%" }}>
+        <Button onPress={handleClick} mt="$2">
+          Venceu
+        </Button>
+      </View>
+    </YStack>
   );
 }
