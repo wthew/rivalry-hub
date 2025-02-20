@@ -1,16 +1,9 @@
 import React, { useMemo } from "react";
-import {
-  FontAwesome,
-  FontAwesome6,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import { FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { useMedia, useTheme, useConfiguration } from "tamagui";
-import { supabase } from "@/src/services/supabase";
 import { useSession } from "@/src/contexts/session";
-import { Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useToast } from "react-native-toast-notifications";
 
 export default function TabLayout() {
   const { lg } = useMedia();
@@ -18,7 +11,6 @@ export default function TabLayout() {
   const { tokens } = useConfiguration();
 
   const { session, nick } = useSession();
-  const toast = useToast();
 
   const options: React.ComponentProps<typeof Tabs>["screenOptions"] = useMemo(
     () =>

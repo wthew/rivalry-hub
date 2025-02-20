@@ -12,11 +12,10 @@ import { modalOptions } from "../components/modal/index";
 import * as NavigationBar from "expo-navigation-bar";
 import * as SystemUI from "expo-system-ui";
 import { Platform, Pressable } from "react-native";
-import { Text, View, XStack } from "tamagui";
+import { Text, XStack } from "tamagui";
 import { StatusBar } from "expo-status-bar";
 import { ToastProvider } from "react-native-toast-notifications";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { supabase } from "../services/supabase";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SessionContextProvider from "../contexts/session";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
