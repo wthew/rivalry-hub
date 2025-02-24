@@ -23,10 +23,9 @@ export default function useData<
   const { key, select, filter, limit, skip } = opts;
 
   return useQuery({
+    enabled: !skip,
     queryKey: Array.isArray(key) ? [table, ...key] : [table, key],
     queryFn: async () => {
-      if (skip) return undefined;
-
       const builder: Builder<Schema, Relation<T>, T> = supabase.from(table);
       const t = builder.select(select);
 

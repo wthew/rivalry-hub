@@ -1,8 +1,10 @@
 import useRealTimeData from "@/src/hooks/useRealTimeData";
 import { supabase } from "@/src/services/supabase";
 import { Tables } from "@/src/types/supabase";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback } from "react";
-import { Button, Card, Text, View, XStack, YStack } from "tamagui";
+import { TouchableOpacity } from "react-native";
+import { Card, Text, useTheme, View, XStack, YStack } from "tamagui";
 
 type BattleCardProps = {
   battle: Pick<Tables<"battles">, "id" | "profile_a" | "profile_b">;
@@ -25,14 +27,12 @@ export default function BattleCard({ battle }: BattleCardProps) {
 
   return (
     <Card padded bordered>
-      <XStack columnGap="$6" items="center">
+      <XStack columnGap="$4" items="center">
         <BattleProfileControl data={profile_a} />
-        <YStack items="center">
-          <Text>à</Text>
+        <YStack items="center" justify="center">
           <Text fontSize="$8" fontWeight="bold">
             x
           </Text>
-          <Text>encerrar</Text>
         </YStack>
         <BattleProfileControl data={profile_b} />
       </XStack>
@@ -48,14 +48,17 @@ type BattleProfileControlProps = {
 function BattleProfileControl(props: BattleProfileControlProps) {
   const { profile_id, wins } = props.data;
 
-  const handleClick = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("battles_profiles_wins")
-      .update({ wins: props.data.wins + 1 })
-      .eq("id", props.data.id)
-      .select();
+  const { color } = useTheme();
 
-    console.log({ data, error });
+  const handleClick = useCallback(async (inc: number) => {
+    const { error } = await supabase
+      .from("battles_profiles_wins")
+      .update({ wins: props.data.wins + inc })
+      .eq("id", props.data.id);
+
+    if (error) {
+      // TODO
+    }
   }, [props.data.id, props.data.wins]);
 
   return (
@@ -66,10 +69,14 @@ function BattleProfileControl(props: BattleProfileControlProps) {
         {profile_id.nick}
       </Text>
 
-      <View style={{ width: "100%" }}>
-        <Button onPress={handleClick} mt="$2">
-          Venceu
-        </Button>
+      <View style={{ flex: 1, flexDirection: 'row', marginBottom: -8, marginTop: 4 }}>
+        <TouchableOpacity onPress={() => handleClick(1)}>
+          <Ionicons name="caret-up-circle-sharp" size={24} color={color.val} />
+        </TouchableOpacity>
+        <View mx="$4" />
+        <TouchableOpacity onPress={() => handleClick(-1)}>
+          <Ionicons name="caret-down-circle-sharp" size={24} color={color.val} />
+        </TouchableOpacity>
       </View>
     </YStack>
   );
